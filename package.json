@@ -1,6 +1,7 @@
 {
   "name": "anime-reminder-whatsapp",
   "license": "AGPL-3.0",
+  "version": "0.0.1",
   "author": {
     "name": "Lucky Yambem",
     "url": "https://github.com/LuckyYam/"
@@ -20,6 +21,7 @@
     "start": "node build/index.js"
   },
   "dependencies": {
+    "@hapi/boom": "^10.0.1",
     "@prisma/client": "^5.10.2",
     "@shineiichijo/marika": "^3.0.0",
     "@whiskeysockets/baileys": "^6.6.0",
@@ -29,7 +31,9 @@
     "link-preview-js": "^3.0.5",
     "moment": "^2.30.1",
     "moment-timezone": "^0.5.45",
+    "node-cache": "^5.1.2",
     "node-cron": "^3.0.3",
+    "pino": "^8.19.0",
     "qrcode-terminal": "^0.12.0",
     "sharp": "^0.32.2"
   },

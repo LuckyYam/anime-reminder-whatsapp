@@ -1,6 +1,5 @@
 generator client {
-  provider = "prisma-client-js",
-  previewFeatures = ["mongodb"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -9,13 +8,13 @@ datasource db {
 }
 
 model Anime {
-  id String @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
   mal_id String @unique
-  data Data?
+  broadcast_data BroadcastData?
   registered String[]
 }
 
-type Data {
+type BroadcastData {
   timezone String
   day String
   time String

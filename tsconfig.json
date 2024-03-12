@@ -5,8 +5,10 @@
     "outDir": "./build",                                  
     "forceConsistentCasingInFileNames": true,        
     "strict": true,                                     
-    "noImplicitAny": true,                            
-    "strictNullChecks": true
+    "noImplicitAny": false,                            
+    "strictNullChecks": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
   },
   "include": ["src/**/*.ts"]
 }
