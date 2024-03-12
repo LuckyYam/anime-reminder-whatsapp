@@ -1,0 +1,23 @@
+generator client {
+  provider = "prisma-client-js",
+  previewFeatures = ["mongodb"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Anime {
+  id String @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  mal_id String @unique
+  data Data?
+  registered String[]
+}
+
+type Data {
+  timezone String
+  day String
+  time String
+  start String
+}

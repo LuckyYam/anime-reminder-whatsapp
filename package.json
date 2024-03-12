@@ -1,0 +1,46 @@
+{
+  "name": "anime-reminder-whatsapp",
+  "license": "ISC",
+  "author": {
+    "name": "Lucky Yambem",
+    "url": "https://github.com/LuckyYam/"
+  },
+  "description": "Anime reminder for WhatsApp",
+  "homepage": "https://github.com/LuckyYam/anime-reminder-whatsapp",
+  "main": "./build/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LuckyYam/anime-reminder-whatsapp"
+  },
+  "scripts": {
+    "build": "rimraf build && tsc",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "format": "prettier --write --config .prettierrc.json \"src/**/*.ts\"",
+    "start": "node build/index.js"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.10.2",
+    "@shineiichijo/marika": "^3.0.0",
+    "@whiskeysockets/baileys": "^6.6.0",
+    "axios": "^1.6.7",
+    "dotenv": "^16.4.5",
+    "jimp": "^0.16.1",
+    "link-preview-js": "^3.0.5",
+    "moment": "^2.30.1",
+    "moment-timezone": "^0.5.45",
+    "node-cron": "^3.0.3",
+    "qrcode-terminal": "^0.12.0",
+    "sharp": "^0.32.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.26",
+    "@typescript-eslint/eslint-plugin": "^7.2.0",
+    "@typescript-eslint/parser": "^7.2.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5",
+    "prisma": "^5.10.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.2"
+  }
+}
