@@ -1,6 +1,6 @@
 {
   "name": "anime-reminder-whatsapp",
-  "license": "ISC",
+  "license": "AGPL-3.0",
   "author": {
     "name": "Lucky Yambem",
     "url": "https://github.com/LuckyYam/"
@@ -13,7 +13,7 @@
     "url": "https://github.com/LuckyYam/anime-reminder-whatsapp"
   },
   "scripts": {
-    "build": "rimraf build && tsc",
+    "build": "tsc",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "format": "prettier --write --config .prettierrc.json \"src/**/*.ts\"",

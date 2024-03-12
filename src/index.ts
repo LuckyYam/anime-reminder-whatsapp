@@ -1,2 +1,1 @@
-const start = () => {}
-start()
+export default ''
