@@ -10,7 +10,7 @@ datasource db {
 model Anime {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   mal_id String @unique
-  broadcast_data BroadcastData?
+  broadcast_data BroadcastData
   registered String[]
 }
 
