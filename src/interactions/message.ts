@@ -164,7 +164,11 @@ export class MessageInteraction {
                 from,
                 {
                     [type]: content,
-                    caption
+                    caption,
+                    jpegThumbnail:
+                        type === 'image'
+                            ? (content as Buffer).toString('base64')
+                            : undefined
                 } as unknown as AnyMessageContent,
                 {
                     quoted: m

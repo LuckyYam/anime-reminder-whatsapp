@@ -1,7 +1,12 @@
 import { config } from 'dotenv'
+import chalk from 'chalk'
 import { Client } from './lib'
-import { CallInteraction, MessageInteraction } from './interactions'
-import { CommandLoader } from './loaders'
+import {
+    CallInteraction,
+    MessageInteraction,
+    ReminderInteraction
+} from './interactions'
+import { AnimeLoader, CommandLoader } from './loaders'
 
 config()
 ;(async () => {
@@ -20,7 +25,17 @@ config()
         'new-message',
         async (m) => await new MessageInteraction(client).handle(m)
     )
-    client.once('open', () => {
+    client.once('open', async () => {
+        await client.db.prisma
+            .$connect()
+            .then(() =>
+                console.log(
+                    `${chalk.cyanBright('[DATABASE]')} - Connected to the database`
+                )
+            )
         new CommandLoader(client).loadCommands()
+        await new AnimeLoader(client).load()
+        await client.init()
+        await new ReminderInteraction(client).handle()
     })
 })()

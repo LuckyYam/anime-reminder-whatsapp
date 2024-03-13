@@ -12,8 +12,9 @@ import P from 'pino'
 import EventEmitter from 'events'
 import TypedEventEmitter from 'typed-emitter'
 import chalk from 'chalk'
-import { BaseCommand } from '.'
+import { BaseCommand, Database, Parser, Utils } from '.'
 import { IAnimeStore } from '../types'
+import { Anime } from '@shineiichijo/marika'
 
 export class Client extends (EventEmitter as new () => TypedEventEmitter<Events>) {
     constructor(
@@ -85,12 +86,70 @@ export class Client extends (EventEmitter as new () => TypedEventEmitter<Events>
         return sock
     }
 
+    public init = async (): Promise<void> => {
+        const data = this.store.get('today')
+        if (!data || !data.length) return void null
+        for (const anime of data) {
+            const localAiringTime = this.utils.getLocalAiringTime(
+                anime.broadcast_data.time
+                    .split(':')
+                    .map((x) => (x.length < 2 ? `0${x}` : x))
+                    .join(':'),
+                anime.broadcast_data.timezone
+            )
+            const ms = this.utils.getTimeoutMs(localAiringTime)
+            if (ms < 0) continue
+            const { getAnimeSearch } = new Anime()
+            const { data } = await getAnimeSearch({ q: anime.title })
+            const animeData = data[0]
+            const getImage = () => {
+                if (animeData.images.jpg.large_image_url)
+                    return animeData.images.jpg.large_image_url
+                if (animeData.images.jpg.image_url)
+                    return animeData.images.jpg.image_url
+                return animeData.images.jpg.small_image_url || ''
+            }
+            if (!this.scheduled.includes(anime.title)) {
+                this.scheduled.push(anime.title)
+                setTimeout(async () => {
+                    for (const id of anime.registered) {
+                        if (!anime.delayed) {
+                            const image = await this.utils.getBuffer(getImage())
+                            await this.sock.sendMessage(id, {
+                                image,
+                                jpegThumbnail: image.toString('base64'),
+                                caption: `Episode ${anime.ep} of the anime ${animeData.title_english || animeData.title} has just been aired. ${anime.links.length ? `\n\n*External Links:*\n${anime.links.join('\n')}\n\n*Note:* It might take some time for this episode to appear on one of the external links.` : ''}`,
+                                contextInfo: {
+                                    externalAdReply: {
+                                        title: 'MyAnimeList',
+                                        thumbnail: await this.utils.getBuffer(
+                                            'https://upload.wikimedia.org/wikipedia/commons/7/7a/MyAnimeList_Logo.png'
+                                        ),
+                                        mediaType: 1,
+                                        body:
+                                            animeData.title_english ||
+                                            animeData.title,
+                                        sourceUrl: animeData.url
+                                    }
+                                }
+                            })
+                        }
+                    }
+                }, ms)
+            }
+        }
+    }
+
     public msgRetryCounterCache = new NodeCache()
     public logger = P({ level: 'silent' }).child({}) as any
     public sock!: ReturnType<typeof makeWASocket>
     public commands = new Map<string, BaseCommand>()
     public cooldown = new Map<string, number>()
     public store = new Map<'today', IAnimeStore[]>()
+    public db = new Database()
+    public utils = new Utils()
+    public parser = new Parser()
+    public scheduled: string[] = []
 }
 
 type Events = {

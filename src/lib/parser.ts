@@ -1,9 +1,10 @@
 import { load } from 'cheerio'
-import { getToday, odd, cleanArray } from '.'
+import { Utils, odd } from '.'
 export class Parser {
     public getTodayUnairedAnime = (
         data: string
     ): { title: string; delayed: boolean; ep: number; links: string[] }[] => {
+        const { getToday, cleanArray } = new Utils()
         const $ = load(data)
         const today = getToday()
         const isOdd = odd.includes(today as 'Sunday')

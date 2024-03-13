@@ -29,6 +29,8 @@ export class Database {
             })
     }
 
+    public getAll = async () => await this.prisma.anime.findMany()
+
     public updateBroadcast = async (data: IAnime) => {
         if (data.aired.from && data.broadcast.time !== null)
             await this.prisma.anime.update({
@@ -68,7 +70,7 @@ export class Database {
                             : 'unknown'
                 },
                 titles: {
-                    title_eng: data.title_english,
+                    title_eng: data.title_english || '',
                     title_rom: data.title
                 }
             }

@@ -6,7 +6,8 @@ export default class extends BaseCommand {
         super({
             name: 'eval',
             cooldown: 3,
-            description: 'Evaluated JavaScript'
+            description: 'Evaluated JavaScript',
+            usage: 'eval [code]'
         })
     }
 

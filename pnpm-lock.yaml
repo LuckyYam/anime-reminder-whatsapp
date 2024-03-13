@@ -12,8 +12,8 @@ dependencies:
     specifier: ^5.10.2
     version: 5.10.2(prisma@5.10.2)
   '@shineiichijo/marika':
-    specifier: ^3.0.0
-    version: 3.0.0
+    specifier: ^3.0.1
+    version: 3.0.1
   '@whiskeysockets/baileys':
     specifier: ^6.6.0
     version: 6.6.0(jimp@0.16.1)(link-preview-js@3.0.5)(qrcode-terminal@0.12.0)(sharp@0.32.2)
@@ -76,6 +76,9 @@ devDependencies:
   '@types/node':
     specifier: ^20.11.26
     version: 20.11.26
+  '@types/node-cron':
+    specifier: ^3.0.11
+    version: 3.0.11
   '@typescript-eslint/eslint-plugin':
     specifier: ^7.2.0
     version: 7.2.0(@typescript-eslint/parser@7.2.0)(eslint@8.57.0)(typescript@5.4.2)
@@ -699,8 +702,8 @@ packages:
     resolution: {integrity: sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==}
     dev: false
 
-  /@shineiichijo/marika@3.0.0:
-    resolution: {integrity: sha512-K1SdyUtGeotADZECN3P67fZAHg/tK5zKW0L6VDXVp/VEGj4Aa6kNbM0DRn1nFbdhsplTLHjJo/AUVpbRpJ1i2Q==}
+  /@shineiichijo/marika@3.0.1:
+    resolution: {integrity: sha512-j5+N9zgb0Mf3zJ4TJq+hFnXBrtWht+wU4HacNOkCeWFUlpc7PXDyj1tLDxDyc7k8yTvJWso8n9r3P4Twfkj8GQ==}
     dependencies:
       axios: 1.6.7
       axios-cache-interceptor: 1.5.1(axios@1.6.7)
@@ -760,6 +763,10 @@ packages:
   /@types/long@4.0.2:
     resolution: {integrity: sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA==}
     dev: false
+
+  /@types/node-cron@3.0.11:
+    resolution: {integrity: sha512-0ikrnug3/IyneSHqCBeslAhlK2aBfYek1fGo4bP4QnZPmiqSGRK+Oy7ZMisLWkesffJvQ1cqAcBnJC+8+nxIAg==}
+    dev: true
 
   /@types/node@10.17.60:
     resolution: {integrity: sha512-F0KIgDJfy2nA3zMLmWGKxcH2ZVEtCZXHHdOQs2gSaQ27+lNeEfGxzkIw90aXswATX7AZ33tahPbzy6KAfUreVw==}

@@ -23,7 +23,7 @@
   "dependencies": {
     "@hapi/boom": "^10.0.1",
     "@prisma/client": "^5.10.2",
-    "@shineiichijo/marika": "^3.0.0",
+    "@shineiichijo/marika": "^3.0.1",
     "@whiskeysockets/baileys": "^6.6.0",
     "axios": "^1.6.7",
     "chalk": "4.1.2",
@@ -46,6 +46,7 @@
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^20.11.26",
+    "@types/node-cron": "^3.0.11",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
     "eslint": "^8.57.0",
