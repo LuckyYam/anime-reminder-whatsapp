@@ -1,19 +1,18 @@
 import { PrismaClient } from '@prisma/client'
 import { IAnime } from '@shineiichijo/marika'
-import { IAnimeModel } from '../types'
 
 export class Database {
     get prisma(): PrismaClient {
         return new PrismaClient()
     }
 
-    public getAnime = async (mal_id: number | string) => {
-        const anime = await this.prisma.anime.findMany({
+    public getAnime = async (mal_id: number | string) =>
+        await this.prisma.anime.findUnique({
             where: { mal_id: `${mal_id}` }
         })
-        if (anime && anime.length) return anime[0] as IAnimeModel
-        else return null
-    }
+
+    public getAllRegisteredAnime = async () =>
+        await this.prisma.anime.findMany()
 
     public pushRegistered = async (mal_id: string | number, add: string) => {
         const data = await this.getAnime(mal_id)
@@ -42,7 +41,7 @@ export class Database {
                             timezone: data.broadcast.timezone,
                             day: data.broadcast.day,
                             time: data.broadcast.time,
-                            start: data.aired.from.split('T')
+                            start: data.aired.from.split('T')[0]
                         }
                     }
                 }
@@ -57,7 +56,7 @@ export class Database {
         }
         await this.prisma.anime.create({
             data: {
-                mal_id: data.mal_id,
+                mal_id: `${data.mal_id}`,
                 registered,
                 broadcast_data: {
                     timezone: data.broadcast.timezone,
@@ -67,6 +66,10 @@ export class Database {
                         data.broadcast.day !== 'null' && data.aired.from
                             ? data.aired.from.split('T')[0]
                             : 'unknown'
+                },
+                titles: {
+                    title_eng: data.title_english,
+                    title_rom: data.title
                 }
             }
         })

@@ -12,6 +12,7 @@ model Anime {
   mal_id String @unique
   broadcast_data BroadcastData
   registered String[]
+  titles Title
 }
 
 type BroadcastData {
@@ -19,4 +20,9 @@ type BroadcastData {
   day String
   time String
   start String
+}
+
+type Title {
+  title_eng String
+  title_rom String
 }
