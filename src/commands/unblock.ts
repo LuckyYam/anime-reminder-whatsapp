@@ -10,6 +10,7 @@ export default class extends BaseCommand {
             description: "Unblock users from the bot's id."
         })
     }
+
     public override execute = async (
         M: Message,
         { flags }: IParam

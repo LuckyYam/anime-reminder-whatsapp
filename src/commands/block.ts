@@ -11,6 +11,7 @@ export default class extends BaseCommand {
                 "Block users from the bot's id to make the bot ignore the user."
         })
     }
+
     public override execute = async (
         M: Message,
         { flags }: IParam
@@ -31,7 +32,7 @@ export default class extends BaseCommand {
             (user) =>
                 user !== this.client.cleanId(this.client.sock.user?.id || '') &&
                 user !== M.sender.id &&
-                !this.client.config.owner.includes(user)
+                !this.client.config.owners.includes(user)
         )
         if (!users.length)
             return void (await M.reply(

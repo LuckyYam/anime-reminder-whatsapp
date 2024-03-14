@@ -11,7 +11,7 @@ export class CallInteraction {
         )
         await this.client.sock.rejectCall(call.id, call.from)
         console.log(`${chalk.redBright('[CALL]')} - Call rejected!`)
-        if (this.client.config.owner.includes(call.from)) return void null
+        if (this.client.config.owners.includes(call.from)) return void null
         await this.client.sock.updateBlockStatus(call.from, 'block')
         console.log(`${chalk.redBright('[CALL]')} - User blocked!`)
     }

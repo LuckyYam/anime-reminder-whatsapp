@@ -12,7 +12,7 @@ config()
 ;(async () => {
     const client = new Client({
         prefix: process.env.PREFIX || '!',
-        owner: (process.env.OWNER || '')
+        owners: (process.env.OWNERS || '')
             .split(', ')
             .filter((x) => x !== '')
             .map((x) => `${x}@s.whatsapp.net`),

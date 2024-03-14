@@ -25,7 +25,7 @@ export class MessageInteraction {
         if (
             !command ||
             (['eval', 'block', 'unblock'].includes(command.config.name) &&
-                !this.client.config.owner.includes(M.sender.id))
+                !this.client.config.owners.includes(M.sender.id))
         )
             return void (await M.reply("Can't find any command of this."))
         const cd = this.client.cooldown.get(
@@ -126,7 +126,7 @@ export class MessageInteraction {
             ...rawMentioned.filter((x) => x !== null && x !== undefined)
         )
         const from = key.remoteJid || ''
-        if (this.client.config.owner.includes(sender.id)) sender.isOwner = true
+        if (this.client.config.owners.includes(sender.id)) sender.isOwner = true
         let quoted:
             | {
                   sender: { id: string; isOwner: boolean }
@@ -161,7 +161,7 @@ export class MessageInteraction {
                 },
                 sender: {
                     id: this.client.cleanId(context.participant),
-                    isOwner: this.client.config.owner.includes(
+                    isOwner: this.client.config.owners.includes(
                         context.participant
                     )
                 }

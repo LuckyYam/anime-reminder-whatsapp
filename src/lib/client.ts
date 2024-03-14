@@ -23,11 +23,11 @@ export class Client extends (EventEmitter as new () => TypedEventEmitter<Events>
     constructor(
         public config: {
             prefix: string
-            owner: string[]
+            owners: string[]
             session_dir: string
         } = {
             prefix: '!',
-            owner: [],
+            owners: [],
             session_dir: 'auth'
         }
     ) {
