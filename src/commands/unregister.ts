@@ -1,6 +1,6 @@
 import { BaseCommand } from '../lib'
-import { IParam, Message } from '../types'
 import { AnimeLoader } from '../loaders'
+import { IParam, Message } from '../types'
 
 export default class extends BaseCommand {
     constructor() {
@@ -8,7 +8,7 @@ export default class extends BaseCommand {
             name: 'unregister',
             cooldown: 20,
             description:
-                'Registers anime to remind a user about when a new episode airs',
+                'Registers anime to remind a user about when a new episode airs.',
             usage: 'unregister --id=<mal_id>'
         })
     }

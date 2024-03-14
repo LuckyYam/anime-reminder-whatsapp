@@ -1,7 +1,7 @@
 import { Anime } from '@shineiichijo/marika'
 import { BaseCommand } from '../lib'
-import { IParam, Message } from '../types'
 import { AnimeLoader } from '../loaders'
+import { IParam, Message } from '../types'
 
 export default class extends BaseCommand {
     constructor() {
@@ -9,7 +9,7 @@ export default class extends BaseCommand {
             name: 'register',
             cooldown: 30,
             description:
-                'Registers anime to remind a user when a new episode airs',
+                'Registers anime to remind a user when a new episode airs.',
             usage: 'register --id=<mal_id>'
         })
     }

@@ -14,17 +14,17 @@ export class MessageInteraction {
                 `${chalk.magentaBright('[MESSAGE]')} - Message from ${chalk.cyan(M.sender.username !== '' ? M.sender.username : M.sender.id.split('@')[0])} in ${chalk.blue(M.isGroup ? M.from : 'DM')}`
             )
         if (!M.text) return void null
-        const blacklist = await this.client.sock.fetchBlocklist()
-        if (blacklist.includes(M.sender.id)) return void null
+        const blocklist = await this.client.sock.fetchBlocklist()
+        if (blocklist.includes(M.sender.id)) return void null
         const msg = M.text.slice(1).trim()
-        const cmd = msg.split(' ')[0]
+        const cmd = msg.split(' ')[0].toLowerCase()
         console.log(
             `${chalk.yellowBright('[COMMAND]')} - Command ${chalk.cyan(`${this.client.config.prefix}${cmd}`)} from ${chalk.cyan(M.sender.username !== '' ? M.sender.username : M.sender.id.split('@')[0])} in ${chalk.blue(M.isGroup ? M.from : 'DM')}`
         )
         const command = this.client.commands.get(cmd)
         if (
             !command ||
-            (command.config.name === 'eval' &&
+            (['eval', 'block', 'unblock'].includes(command.config.name) &&
                 !this.client.config.owner.includes(M.sender.id))
         )
             return void (await M.reply("Can't find any command of this."))
@@ -109,13 +109,22 @@ export class MessageInteraction {
                             : 'videoMessage'
                     ]?.caption
                   : undefined
-        const type = Object.keys(m.message || {})[0]
+        const type = Object.keys(m.message || {})[0] || 'conversation'
         const context = m.message?.[type as 'extendedTextMessage']?.contextInfo
         const sender = {
-            id: isGroup ? key.participant || '' : key.remoteJid || '',
+            id: isGroup
+                ? this.client.cleanId(key.participant || '')
+                : this.client.cleanId(key.remoteJid || ''),
             username: m.pushName || '',
             isOwner: false
         }
+        const mentioned: string[] = []
+        const rawMentioned =
+            m.message?.[type as 'extendedTextMessage']?.contextInfo
+                ?.mentionedJid || []
+        mentioned.push(
+            ...rawMentioned.filter((x) => x !== null && x !== undefined)
+        )
         const from = key.remoteJid || ''
         if (this.client.config.owner.includes(sender.id)) sender.isOwner = true
         let quoted:
@@ -127,7 +136,8 @@ export class MessageInteraction {
               }
             | undefined = undefined
         if (context?.quotedMessage && context.participant && context.stanzaId) {
-            const quotedType = Object.keys(context.quotedMessage)[0]
+            const quotedType =
+                Object.keys(context.quotedMessage)[0] || 'conversation'
             const text = ['imageMessage', 'videoMessage'].includes(quotedType)
                 ? context.quotedMessage?.[quotedType as 'imageMessage']
                       ?.caption || undefined
@@ -141,12 +151,16 @@ export class MessageInteraction {
                 message: context.quotedMessage,
                 key: {
                     remoteJid: from,
-                    fromMe: context.participant === this.client.sock.user?.id,
+                    fromMe:
+                        this.client.cleanId(context.participant || '') ===
+                        this.client.cleanId(this.client.sock.user?.id || ''),
                     id: context.stanzaId,
                     participant: context.participant
+                        ? this.client.cleanId(context.participant)
+                        : undefined
                 },
                 sender: {
-                    id: context.participant,
+                    id: this.client.cleanId(context.participant),
                     isOwner: this.client.config.owner.includes(
                         context.participant
                     )
@@ -156,6 +170,7 @@ export class MessageInteraction {
         const reply = async (
             content: string | Buffer,
             type: 'text' | 'image' | 'video' = 'text',
+            mentions?: string[],
             caption?: string
         ) => {
             if (type === 'text' && Buffer.isBuffer(content))
@@ -168,7 +183,8 @@ export class MessageInteraction {
                     jpegThumbnail:
                         type === 'image'
                             ? (content as Buffer).toString('base64')
-                            : undefined
+                            : undefined,
+                    mentions
                 } as unknown as AnyMessageContent,
                 {
                     quoted: m
@@ -185,7 +201,8 @@ export class MessageInteraction {
             text,
             messageType,
             isGroup,
-            isCommand: text?.startsWith(this.client.config.prefix) || false
+            isCommand: text?.startsWith(this.client.config.prefix) || false,
+            mentioned
         }
     }
 }

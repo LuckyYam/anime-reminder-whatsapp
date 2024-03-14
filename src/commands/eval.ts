@@ -6,7 +6,7 @@ export default class extends BaseCommand {
         super({
             name: 'eval',
             cooldown: 3,
-            description: 'Evaluated JavaScript',
+            description: 'Evaluated JavaScript.',
             usage: 'eval [code]'
         })
     }
@@ -17,8 +17,12 @@ export default class extends BaseCommand {
     ): Promise<void> => {
         let out: string
         try {
-            const output = eval(param.context) || 'Evaluated'
-            out = JSON.stringify(output, null, 4)
+            const output = eval(param.context)
+            out = JSON.stringify(
+                output === undefined ? 'Evaluated' : output,
+                null,
+                4
+            )
         } catch (err: any) {
             out = err.message
         }

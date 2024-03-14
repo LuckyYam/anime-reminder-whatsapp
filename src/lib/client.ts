@@ -16,7 +16,7 @@ import chalk from 'chalk'
 import { readdir, unlink, rmdir } from 'fs-extra'
 import { join } from 'path'
 import { Anime } from '@shineiichijo/marika'
-import { BaseCommand, Database, Parser, Utils } from '.'
+import { BaseCommand, Database, MAL_LOGO_URL, Parser, Utils } from '.'
 import { IAnimeStore } from '../types'
 
 export class Client extends (EventEmitter as new () => TypedEventEmitter<Events>) {
@@ -137,13 +137,14 @@ export class Client extends (EventEmitter as new () => TypedEventEmitter<Events>
                             await this.sock.sendMessage(id, {
                                 image,
                                 jpegThumbnail: image.toString('base64'),
-                                caption: `Episode ${anime.ep} of the anime ${animeData.title_english || animeData.title} has just been aired. ${anime.links.length ? `\n\n*External Links:*\n${anime.links.join('\n')}\n\n*Note:* It might take some time for this episode to appear on one of the external links.` : ''}`,
+                                caption: `Episode ${anime.ep} of the anime ${animeData.title_english || animeData.title} has just been aired! ${anime.links.length ? `\n\n*External Links:*\n${anime.links.join('\n')}\n\n*Note:* It might take some time for this episode to appear on one of the external links.` : ''}`,
                                 contextInfo: {
                                     externalAdReply: {
                                         title: 'MyAnimeList',
-                                        thumbnail: await this.utils.getBuffer(
-                                            'https://upload.wikimedia.org/wikipedia/commons/7/7a/MyAnimeList_Logo.png'
-                                        ),
+                                        thumbnail:
+                                            await this.utils.getBuffer(
+                                                MAL_LOGO_URL
+                                            ),
                                         mediaType: 1,
                                         body:
                                             animeData.title_english ||
@@ -172,6 +173,9 @@ export class Client extends (EventEmitter as new () => TypedEventEmitter<Events>
             `${chalk.yellowBright('[SESSION]')} - Session deleted successfully.`
         )
     }
+
+    public cleanId = (id: string): string =>
+        id.includes(':') ? id.split(':')[0].concat('@s.whatsapp.net') : id
 
     public msgRetryCounterCache = new NodeCache()
     public logger = P({ level: 'silent' }).child({}) as any
