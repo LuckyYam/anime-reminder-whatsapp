@@ -136,7 +136,10 @@ export class Client extends (EventEmitter as new () => TypedEventEmitter<Events>
                             const image = await this.utils.getBuffer(getImage())
                             await this.sock.sendMessage(id, {
                                 image,
-                                jpegThumbnail: image.toString('base64'),
+                                jpegThumbnail:
+                                    process.platform === 'win32'
+                                        ? image.toString('base64')
+                                        : undefined,
                                 caption: `Episode ${anime.ep} of the anime ${animeData.title_english || animeData.title} has just been aired! ${anime.links.length ? `\n\n*External Links:*\n${anime.links.join('\n')}\n\n*Note:* It might take some time for this episode to appear on one of the external links.` : ''}`,
                                 contextInfo: {
                                     externalAdReply: {

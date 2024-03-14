@@ -6,7 +6,7 @@ export class AnimeLoader {
     constructor(private readonly client: Client) {}
 
     public load = async (): Promise<void> => {
-        let data = await this.client.db.getAll()
+        let data = await this.client.db.getAllRegisteredAnime()
         if (!data || !data.length) {
             this.client.store.set('today', [])
             return void null

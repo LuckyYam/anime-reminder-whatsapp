@@ -104,4 +104,32 @@ export class Utils {
 
     public getBuffer = async (url: string): Promise<Buffer> =>
         (await axios.get<Buffer>(url, { responseType: 'arraybuffer' })).data
+
+    public paginateArray = <T>(
+        data: T[],
+        limit = 10,
+        page = 1
+    ): {
+        pagination: {
+            current_page: number
+            total_pages: number
+            has_next_page: boolean
+        }
+        data: T[]
+    } => {
+        const total_pages = Math.ceil(data.length / limit)
+        const start = (page - 1) * limit
+        const end = start + limit
+        const has_next_page = page < total_pages
+        if (total_pages < page)
+            return {
+                pagination: { total_pages, current_page: page, has_next_page },
+                data: []
+            }
+        const result = data.slice(start, end)
+        return {
+            pagination: { current_page: page, has_next_page, total_pages },
+            data: result
+        }
+    }
 }

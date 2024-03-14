@@ -51,7 +51,8 @@ export class Database {
         }
     }
 
-    public getAll = async () => await this.prisma.anime.findMany()
+    public getUserAnimeList = async (id: string) =>
+        await this.prisma.anime.findMany({ where: { registered: { has: id } } })
 
     public updateBroadcast = async (data: IAnime) => {
         if (data.aired.from && data.broadcast.time !== null)

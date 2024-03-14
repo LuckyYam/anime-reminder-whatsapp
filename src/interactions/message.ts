@@ -181,7 +181,7 @@ export class MessageInteraction {
                     [type]: content,
                     caption,
                     jpegThumbnail:
-                        type === 'image'
+                        type === 'image' && process.platform === 'win32'
                             ? (content as Buffer).toString('base64')
                             : undefined,
                     mentions
