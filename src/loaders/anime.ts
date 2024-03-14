@@ -53,7 +53,7 @@ export class AnimeLoader {
         }
         this.client.store.set('today', result)
         console.log(
-            `${chalk.blueBright('[LOADER]')} - Successfully loaded ${chalk.green(result.length.toString())} anime.`
+            `${chalk.blueBright('[LOADER]')} - Successfully loaded ${chalk.green(result.length.toString())} anime (for today).`
         )
     }
 }

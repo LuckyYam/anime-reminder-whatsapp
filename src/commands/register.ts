@@ -9,7 +9,7 @@ export default class extends BaseCommand {
             name: 'register',
             cooldown: 30,
             description:
-                'Registers anime to remind a user about when a new episode airs',
+                'Registers anime to remind a user when a new episode airs',
             usage: 'register --id=<mal_id>'
         })
     }

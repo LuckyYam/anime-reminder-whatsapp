@@ -6,27 +6,37 @@ import makeWASocket, {
     fetchLatestBaileysVersion,
     makeCacheableSignalKeyStore,
     useMultiFileAuthState,
-    proto
+    proto,
+    delay
 } from '@whiskeysockets/baileys'
 import P from 'pino'
 import EventEmitter from 'events'
 import TypedEventEmitter from 'typed-emitter'
 import chalk from 'chalk'
+import { readdir, unlink, rmdir } from 'fs-extra'
+import { join } from 'path'
+import { Anime } from '@shineiichijo/marika'
 import { BaseCommand, Database, Parser, Utils } from '.'
 import { IAnimeStore } from '../types'
-import { Anime } from '@shineiichijo/marika'
 
 export class Client extends (EventEmitter as new () => TypedEventEmitter<Events>) {
     constructor(
-        public config: { prefix: string; owner: string[] } = {
+        public config: {
+            prefix: string
+            owner: string[]
+            session_dir: string
+        } = {
             prefix: '!',
-            owner: []
+            owner: [],
+            session_dir: 'auth'
         }
     ) {
         super()
     }
     public connect = async () => {
-        const { state, saveCreds } = await useMultiFileAuthState('auth')
+        const { state, saveCreds } = await useMultiFileAuthState(
+            this.config.session_dir
+        )
         const { version } = await fetchLatestBaileysVersion()
         const sock = makeWASocket({
             printQRInTerminal: true,
@@ -71,9 +81,11 @@ export class Client extends (EventEmitter as new () => TypedEventEmitter<Events>
                         this.connect()
                     else {
                         console.log(
-                            `${chalk.greenBright('[CONNECTION]')} - You've been logged out of this session. Delete the "auth" directory and re-run to connect again.`
+                            `${chalk.greenBright('[CONNECTION]')} - You've been logged out of this session.`
                         )
-                        process.exit()
+                        await delay(3000)
+                        await this.deleteSession()
+                        await this.connect()
                     }
                 }
             }
@@ -111,9 +123,16 @@ export class Client extends (EventEmitter as new () => TypedEventEmitter<Events>
             }
             if (!this.scheduled.includes(anime.title)) {
                 this.scheduled.push(anime.title)
-                setTimeout(async () => {
-                    for (const id of anime.registered) {
-                        if (!anime.delayed) {
+                const id = setTimeout(async () => {
+                    const mapData = this.store.get('today')
+                    this.timer.delete(anime.title)
+                    if (!mapData || !mapData.length) return void null
+                    const index = mapData.findIndex(
+                        (x) => x.title === anime.title
+                    )
+                    if (index < 0) return void null
+                    for (const id of mapData[index].registered) {
+                        if (!mapData[index].delayed) {
                             const image = await this.utils.getBuffer(getImage())
                             await this.sock.sendMessage(id, {
                                 image,
@@ -136,8 +155,22 @@ export class Client extends (EventEmitter as new () => TypedEventEmitter<Events>
                         }
                     }
                 }, ms)
+                this.timer.set(anime.title, id)
             }
         }
+    }
+
+    private deleteSession = async (): Promise<void> => {
+        console.log(
+            `${chalk.yellowBright('[SESSION]')} - Deleting session ${this.config.session_dir}.`
+        )
+        const path = [__dirname, '..', '..', this.config.session_dir]
+        const files = await readdir(join(...path))
+        for (const file of files) await unlink(join(...path, file))
+        await rmdir(join(...path))
+        console.log(
+            `${chalk.yellowBright('[SESSION]')} - Session deleted successfully.`
+        )
     }
 
     public msgRetryCounterCache = new NodeCache()
@@ -146,6 +179,7 @@ export class Client extends (EventEmitter as new () => TypedEventEmitter<Events>
     public commands = new Map<string, BaseCommand>()
     public cooldown = new Map<string, number>()
     public store = new Map<'today', IAnimeStore[]>()
+    public timer = new Map<string, NodeJS.Timeout>()
     public db = new Database()
     public utils = new Utils()
     public parser = new Parser()

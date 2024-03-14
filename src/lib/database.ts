@@ -2,8 +2,8 @@ import { PrismaClient } from '@prisma/client'
 import { IAnime } from '@shineiichijo/marika'
 
 export class Database {
-    get prisma(): PrismaClient {
-        return new PrismaClient()
+    constructor() {
+        this.prisma = new PrismaClient()
     }
 
     public getAnime = async (mal_id: number | string) =>
@@ -27,6 +27,28 @@ export class Database {
                     }
                 }
             })
+    }
+
+    public removeAnime = async (mal_id: string): Promise<void> =>
+        void (await this.prisma.anime.delete({ where: { mal_id } }))
+
+    public pullRegistered = async (mal_id: string | number, add: string) => {
+        const data = await this.getAnime(mal_id)
+        if (data) {
+            data.registered.splice(data.registered.indexOf(add), 1)
+            if (data.registered.length)
+                await this.prisma.anime.update({
+                    where: {
+                        mal_id: `${mal_id}`
+                    },
+                    data: {
+                        registered: {
+                            set: data.registered
+                        }
+                    }
+                })
+            else await this.removeAnime(mal_id.toString())
+        }
     }
 
     public getAll = async () => await this.prisma.anime.findMany()
@@ -76,4 +98,6 @@ export class Database {
             }
         })
     }
+
+    public prisma!: PrismaClient
 }

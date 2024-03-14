@@ -14,7 +14,9 @@ config()
         prefix: process.env.PREFIX || '!',
         owner: (process.env.OWNER || '')
             .split(', ')
-            .map((x) => `${x}@s.whatsapp.net`)
+            .filter((x) => x !== '')
+            .map((x) => `${x}@s.whatsapp.net`),
+        session_dir: process.env.SESSION_DIR || 'auth'
     })
     await client.connect()
     client.on(
