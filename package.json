@@ -6,7 +6,7 @@
     "name": "Lucky Yambem",
     "url": "https://github.com/LuckyYam/"
   },
-  "description": "WhatsApp bot to remind users when a new episode airs of an ongoing anime.",
+  "description": "WhatsApp bot to notify users when a new episode airs of an ongoing anime.",
   "homepage": "https://github.com/LuckyYam/anime-reminder-whatsapp",
   "main": "./build/index.js",
   "repository": {
