@@ -8,7 +8,7 @@ export default class extends BaseCommand {
             name: 'unregister',
             cooldown: 20,
             description:
-                'Registers anime to remind a user about when a new episode airs.',
+                'Removes anime from the registered anime list of a user.',
             usage: 'unregister --id=<mal_id>'
         })
     }

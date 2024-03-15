@@ -19,7 +19,7 @@ export default class extends BaseCommand {
             if (['eval', 'block', 'unblock', 'delete'].includes(name))
                 flag = this.client.config.owners.includes(M.sender.id)
             if (flag)
-                text += `\n\n🔵 *Command:* ${name}\n⚪ *Description:* ${description}\n⚫ *Usage:* ${usage
+                text += `\n\n🔵 *Command:* ${this.client.utils.capitalise(name)}\n⚪ *Description:* ${description}\n⚫ *Usage:* ${usage
                     .split('||')
                     .map((x) => this.client.config.prefix.concat(x.trim()))
                     .join(' | ')}\n⏰ *Cooldown:* ${cooldown || 3}s`

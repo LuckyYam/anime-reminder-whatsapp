@@ -17,7 +17,7 @@ export default class extends BaseCommand {
         { flags }: IParam
     ): Promise<void> => {
         let page = 1
-        if (flags.page && typeof Number(flags.page) === 'number')
+        if (flags.page && !isNaN(Number(flags.page)))
             page = parseInt(flags.page) < 1 ? 1 : parseInt(flags.page)
         const animeData = await this.client.db.getUserAnimeList(M.sender.id)
         if (!animeData || !animeData.length)
@@ -27,7 +27,9 @@ export default class extends BaseCommand {
             10,
             page
         )
-        let text = `${M.sender.username}'s registered anime list (${animeData.length} in total)\n\n📗 *Current Page:* ${page}\n📘 *Total Pages:* ${pagination.total_pages}\n`
+        let text = `${M.sender.username}'s registered anime list (${animeData.length} in total)\n`
+        if (pagination.total_pages > 1)
+            text += `\n📗 *Current Page:* ${page}\n📘 *Total Pages:* ${pagination.total_pages}\n`
         for (const anime of data) {
             const i = animeData.findIndex((ani) => ani.mal_id === anime.mal_id)
             text += `\n*#${i + 1}*\n${anime.titles.title_eng || anime.titles.title_rom}\n*[Use ${this.client.config.prefix}unregister --id=${anime.mal_id} to remove this anime from your registered anime list]*\n`

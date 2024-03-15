@@ -75,7 +75,7 @@ export class MessageInteraction {
                 split.length > 1 &&
                 split[1]
             ) {
-                flags[split[0].replace('--', '')] = split[1]
+                flags[split[0].replace('--', '').toLowerCase()] = split[1]
                 data.push(args[i])
             }
         })

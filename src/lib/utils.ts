@@ -132,4 +132,10 @@ export class Utils {
             data: result
         }
     }
+
+    public capitalise = (content: string): string =>
+        content
+            .split(' ')
+            .map((x) => x.charAt(0).toUpperCase().concat(x.slice(1)))
+            .join(' ')
 }
