@@ -5,7 +5,7 @@ export default class extends BaseCommand {
     constructor() {
         super({
             name: 'block',
-            usage: 'block --id=91xxxxx,62xxxx || block (by replying or mentioning a user) || block --id=91xxx,62xxxx (mention users and reply to a user)',
+            usage: 'block (--id=91xxxxx,62xxxx/mentioning users/replying to a user)',
             cooldown: 10,
             description:
                 "Block users from the bot's id to make the bot ignore the user."

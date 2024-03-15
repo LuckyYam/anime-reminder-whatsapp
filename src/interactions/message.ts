@@ -28,7 +28,9 @@ export class MessageInteraction {
         const command = this.client.commands.get(cmd)
         if (
             !command ||
-            (['eval', 'block', 'unblock'].includes(command.config.name) &&
+            (['eval', 'block', 'unblock', 'delete'].includes(
+                command.config.name
+            ) &&
                 !this.client.config.owners.includes(M.sender.id))
         )
             return void (await M.reply("Can't find any command."))

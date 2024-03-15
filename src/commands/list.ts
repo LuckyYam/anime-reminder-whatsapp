@@ -41,7 +41,7 @@ export default class extends BaseCommand {
                 MAL_LOGO_URL
         )
         return void (await this.client.sock.sendMessage(
-            M.sender.id,
+            M.from,
             {
                 image,
                 caption: text.trimEnd(),

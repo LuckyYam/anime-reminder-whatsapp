@@ -5,7 +5,7 @@ export default class extends BaseCommand {
     constructor() {
         super({
             name: 'unblock',
-            usage: 'unblock --id=91xxxxx,62xxxx || unblock (by replying or mentioning a user) || unblock --id=91xxx,62xxxx (mention users and reply to a user)',
+            usage: 'unblock (--id=91xxxxx,62xxxx/mentioning users/replying to a user)',
             cooldown: 10,
             description: "Unblock users from the bot's id."
         })

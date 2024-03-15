@@ -16,7 +16,7 @@ export default class extends BaseCommand {
         this.client.commands.forEach((cmd) => {
             const { name, cooldown, description, usage } = cmd.config
             let flag = true
-            if (['eval', 'block', 'unblock'].includes(name))
+            if (['eval', 'block', 'unblock', 'delete'].includes(name))
                 flag = this.client.config.owners.includes(M.sender.id)
             if (flag)
                 text += `\n\n🔵 *Command:* ${name}\n⚪ *Description:* ${description}\n⚫ *Usage:* ${usage
