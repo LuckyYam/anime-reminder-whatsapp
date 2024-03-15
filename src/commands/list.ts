@@ -1,4 +1,5 @@
-import { BaseCommand } from '../lib'
+import { Anime } from '@shineiichijo/marika'
+import { BaseCommand, MAL_LOGO_URL } from '../lib'
 import { Message, IParam } from '../types'
 
 export default class extends BaseCommand {
@@ -29,8 +30,36 @@ export default class extends BaseCommand {
         let text = `${M.sender.username}'s registered anime list (${animeData.length} in total)\n\n📗 *Current Page:* ${page}\n📘 *Total Pages:* ${pagination.total_pages}\n`
         for (const anime of data) {
             const i = animeData.findIndex((ani) => ani.mal_id === anime.mal_id)
-            text += `\n*#${i + 1}*\n${anime.titles.title_eng || anime.titles.title_rom}\n*[Use ${this.client.config.prefix}unregister --id=${anime.mal_id} to remove this anime from your registered anime list]*`
+            text += `\n*#${i + 1}*\n${anime.titles.title_eng || anime.titles.title_rom}\n*[Use ${this.client.config.prefix}unregister --id=${anime.mal_id} to remove this anime from your registered anime list]*\n`
         }
-        return void (await M.reply(text))
+        const malData = await new Anime().getAnimeById(data[0].mal_id)
+        const { jpg } = malData.images
+        const image = await this.client.utils.getBuffer(
+            jpg.large_image_url ||
+                jpg.image_url ||
+                jpg.small_image_url ||
+                MAL_LOGO_URL
+        )
+        return void (await this.client.sock.sendMessage(
+            M.sender.id,
+            {
+                image,
+                caption: text.trimEnd(),
+                jpegThumbnail:
+                    process.platform === 'win32'
+                        ? image.toString('base64')
+                        : undefined,
+                contextInfo: {
+                    externalAdReply: {
+                        sourceUrl: malData.url,
+                        thumbnail:
+                            await this.client.utils.getBuffer(MAL_LOGO_URL),
+                        title: 'MyAnimeList',
+                        body: malData.title_english || malData.title
+                    }
+                }
+            },
+            { quoted: M.message }
+        ))
     }
 }

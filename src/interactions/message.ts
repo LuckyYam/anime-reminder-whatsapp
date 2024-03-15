@@ -1,4 +1,4 @@
-import { AnyMessageContent, proto } from '@whiskeysockets/baileys'
+import { AnyMessageContent, MessageType, proto } from '@whiskeysockets/baileys'
 import chalk from 'chalk'
 import { Client } from '../lib'
 import { IParam } from '../types'
@@ -9,6 +9,10 @@ export class MessageInteraction {
     public handle = async (m: proto.IWebMessageInfo): Promise<void> => {
         if (m.key.fromMe) return void null
         const M = this.simplify(m)
+        if (
+            ['senderKeyDistributionMessage', 'protocolMessage'].includes(M.type)
+        )
+            return void null
         if (!M.isCommand)
             return console.log(
                 `${chalk.magentaBright('[MESSAGE]')} - Message from ${chalk.cyan(M.sender.username !== '' ? M.sender.username : M.sender.id.split('@')[0])} in ${chalk.blue(M.isGroup ? M.from : 'DM')}`
@@ -27,7 +31,7 @@ export class MessageInteraction {
             (['eval', 'block', 'unblock'].includes(command.config.name) &&
                 !this.client.config.owners.includes(M.sender.id))
         )
-            return void (await M.reply("Can't find any command of this."))
+            return void (await M.reply("Can't find any command."))
         const cd = this.client.cooldown.get(
             `${M.sender.id}:${command.config.name}`
         )
@@ -109,7 +113,8 @@ export class MessageInteraction {
                             : 'videoMessage'
                     ]?.caption
                   : undefined
-        const type = Object.keys(m.message || {})[0] || 'conversation'
+        const type =
+            (Object.keys(m.message || {})[0] as MessageType) || 'conversation'
         const context = m.message?.[type as 'extendedTextMessage']?.contextInfo
         const sender = {
             id: isGroup
@@ -137,7 +142,8 @@ export class MessageInteraction {
             | undefined = undefined
         if (context?.quotedMessage && context.participant && context.stanzaId) {
             const quotedType =
-                Object.keys(context.quotedMessage)[0] || 'conversation'
+                (Object.keys(context.quotedMessage)[0] as MessageType) ||
+                'conversation'
             const text = ['imageMessage', 'videoMessage'].includes(quotedType)
                 ? context.quotedMessage?.[quotedType as 'imageMessage']
                       ?.caption || undefined
@@ -199,7 +205,7 @@ export class MessageInteraction {
             reply,
             key,
             text,
-            messageType,
+            type,
             isGroup,
             isCommand: text?.startsWith(this.client.config.prefix) || false,
             mentioned

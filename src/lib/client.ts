@@ -114,13 +114,6 @@ export class Client extends (EventEmitter as new () => TypedEventEmitter<Events>
             const { getAnimeSearch } = new Anime()
             const { data } = await getAnimeSearch({ q: anime.title })
             const animeData = data[0]
-            const getImage = () => {
-                if (animeData.images.jpg.large_image_url)
-                    return animeData.images.jpg.large_image_url
-                if (animeData.images.jpg.image_url)
-                    return animeData.images.jpg.image_url
-                return animeData.images.jpg.small_image_url || ''
-            }
             if (!this.scheduled.includes(anime.title)) {
                 this.scheduled.push(anime.title)
                 const id = setTimeout(async () => {
@@ -131,24 +124,30 @@ export class Client extends (EventEmitter as new () => TypedEventEmitter<Events>
                         (x) => x.title === anime.title
                     )
                     if (index < 0) return void null
+                    const isLeft = animeData.episodes > anime.ep
+                    const { jpg } = animeData.images
+                    const image = await this.utils.getBuffer(
+                        jpg.large_image_url ||
+                            jpg.image_url ||
+                            jpg.small_image_url ||
+                            MAL_LOGO_URL
+                    )
+                    const thumbnail = await this.utils.getBuffer(MAL_LOGO_URL)
+                    const jpegThumbnail =
+                        process.platform === 'win32'
+                            ? image.toString('base64')
+                            : undefined
                     for (const id of mapData[index].registered) {
                         if (!mapData[index].delayed) {
-                            const image = await this.utils.getBuffer(getImage())
+                            mapData.splice(index, 1)
                             await this.sock.sendMessage(id, {
                                 image,
-                                jpegThumbnail:
-                                    process.platform === 'win32'
-                                        ? image.toString('base64')
-                                        : undefined,
-                                caption: `Episode ${anime.ep} of the anime ${animeData.title_english || animeData.title} has just been aired! ${anime.links.length ? `\n\n*External Links:*\n${anime.links.join('\n')}\n\n*Note:* It might take some time for this episode to appear on one of the external links.` : ''}`,
+                                jpegThumbnail,
+                                caption: `Episode ${anime.ep} of the anime ${animeData.title_english || animeData.title} has just been aired! ${anime.links.length ? `\n\n*External Links:*\n${anime.links.map((link) => `*${link}*`).join('\n')}\n\n*Note:* It might take some time for this episode to appear on one of the external links.` : ''}${!isLeft ? '\n\nThis anime will be removed from your registered list of anime as this is probably the last episode of this anime.' : ''}`,
                                 contextInfo: {
                                     externalAdReply: {
                                         title: 'MyAnimeList',
-                                        thumbnail:
-                                            await this.utils.getBuffer(
-                                                MAL_LOGO_URL
-                                            ),
-                                        mediaType: 1,
+                                        thumbnail,
                                         body:
                                             animeData.title_english ||
                                             animeData.title,
@@ -158,6 +157,9 @@ export class Client extends (EventEmitter as new () => TypedEventEmitter<Events>
                             })
                         }
                     }
+                    this.store.set('today', mapData)
+                    if (!isLeft)
+                        await this.db.removeAnime(animeData.mal_id.toString())
                 }, ms)
                 this.timer.set(anime.title, id)
             }

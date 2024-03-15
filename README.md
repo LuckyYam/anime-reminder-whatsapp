@@ -1,4 +1,4 @@
 # anime-reminder-whatsapp
 
-A WhatsApp bot to remind you about an anime if it airs a new episode.
+WhatsApp bot to remind users when a new episode airs of an ongoing anime.
 ![preview](./img/preview.jpg)
