@@ -145,7 +145,7 @@ export class Client extends (EventEmitter as new () => TypedEventEmitter<Events>
                                 await this.sock.sendMessage(id, {
                                     image,
                                     jpegThumbnail,
-                                    caption: `Episode ${anime.ep} of the anime ${animeData.title_english || animeData.title} has just been aired! ${anime.links.length ? `\n\n*External Links:*\n${anime.links.map((link) => `*${link}*`).join('\n')}\n\n*Note:* It might take some time for this episode to appear on one of the external links.` : ''}${!isLeft ? '\n\nThis anime will be removed from your registered list of anime as this is probably the last episode of this anime.' : ''}`,
+                                    caption: `Episode ${anime.ep} of the anime ${animeData.title_english || animeData.title} has just been aired! ${anime.links.length ? `\n\n*External Links:*\n${anime.links.map((link) => `*${link}*`).join('\n\n')}\n\n*Note:* It might take some time for this episode to appear on one of the external links.` : ''}${!isLeft ? '\n\nThis anime will be removed from your registered list of anime as this is probably the last episode of this anime.' : ''}`,
                                     contextInfo: {
                                         externalAdReply: {
                                             title: 'MyAnimeList',
