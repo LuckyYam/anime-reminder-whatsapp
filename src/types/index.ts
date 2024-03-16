@@ -12,6 +12,7 @@ export interface IAnimeStore {
     title_ani: string
     links: string[]
     broadcast_data: Omit<IAnime['broadcast'], 'string'> & { start: string }
+    mal_id: string
 }
 
 export type Message = ReturnType<MessageInteraction['simplify']>

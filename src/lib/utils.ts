@@ -10,10 +10,18 @@ export class Utils {
 
     public getLocalAiringTime = (
         time: string,
+        day_index: number,
         tz: string = timezone
     ): string => {
-        const now = _moment.tz(tz).format('YYYY-MM-DD')
-        const originalTime = _moment.tz(`${now}T${time}:00`, tz)
+        const tz_moment = _moment.tz(tz)
+        const date =
+            day_index === tz_moment.day()
+                ? tz_moment.format('YYYY-MM-DD')
+                : tz_moment
+                      .clone()
+                      [this.isAhead() ? 'add' : 'subtract'](1, 'd')
+                      .format('YYYY-MM-DD')
+        const originalTime = _moment.tz(`${date}T${time}:00`, tz)
         const result = originalTime
             .clone()
             .tz(this.getLocalTimezone())
@@ -21,13 +29,25 @@ export class Utils {
         return result
     }
 
-    public getTimeoutMs = (timestamp: string): number => {
-        const x = moment(
-            moment().format('YYYY-MM-DD-HH-mm'),
-            'YYYY-MM-DD-HH-mm'
-        )
+    public getDayIndex = (day: Day): number =>
+        [
+            'Sunday',
+            'Monday',
+            'Tuesday',
+            'Wednesday',
+            'Thursday',
+            'Friday',
+            'Saturday'
+        ].indexOf(day)
+
+    public getTimeoutMs = (
+        timestamp: string,
+        from: string = moment().format('YYYY-MM-DD-HH-mm')
+    ): number => {
+        const x = moment(from, 'YYYY-MM-DD-HH-mm')
         const y = moment(timestamp, 'YYYY-MM-DD-HH-mm')
-        return Math.abs(x.diff(y))
+        const ms = Math.abs(x.diff(y))
+        return x.isBefore(y) ? ms : -ms
     }
 
     public isAhead = (): boolean => {

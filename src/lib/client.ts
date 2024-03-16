@@ -17,7 +17,7 @@ import { readdir, unlink, rmdir } from 'fs-extra'
 import { join } from 'path'
 import { Anime } from '@shineiichijo/marika'
 import { BaseCommand, Database, MAL_LOGO_URL, Parser, Utils } from '.'
-import { IAnimeStore } from '../types'
+import { IAnimeStore, Day } from '../types'
 
 export class Client extends (EventEmitter as new () => TypedEventEmitter<Events>) {
     constructor(
@@ -107,13 +107,15 @@ export class Client extends (EventEmitter as new () => TypedEventEmitter<Events>
                     .split(':')
                     .map((x) => (x.length < 2 ? `0${x}` : x))
                     .join(':'),
+                this.utils.getDayIndex(
+                    anime.broadcast_data.day.slice(0, -1) as Day
+                ),
                 anime.broadcast_data.timezone
             )
             const ms = this.utils.getTimeoutMs(localAiringTime)
             if (ms < 0) continue
-            const { getAnimeSearch } = new Anime()
-            const { data } = await getAnimeSearch({ q: anime.title })
-            const animeData = data[0]
+            const { getAnimeById } = new Anime()
+            const animeData = await getAnimeById(anime.mal_id)
             if (!this.scheduled.includes(anime.title)) {
                 this.scheduled.push(anime.title)
                 const id = setTimeout(async () => {
@@ -139,7 +141,6 @@ export class Client extends (EventEmitter as new () => TypedEventEmitter<Events>
                             : undefined
                     for (const id of mapData[index].registered) {
                         if (!mapData[index].delayed) {
-                            mapData.splice(index, 1)
                             await this.sock.sendMessage(id, {
                                 image,
                                 jpegThumbnail,
@@ -157,7 +158,6 @@ export class Client extends (EventEmitter as new () => TypedEventEmitter<Events>
                             })
                         }
                     }
-                    this.store.set('today', mapData)
                     if (!isLeft)
                         await this.db.removeAnime(animeData.mal_id.toString())
                 }, ms)
