@@ -103,7 +103,7 @@ export default class extends BaseCommand {
             .then((res) => res)
             .catch(() => undefined)
         if (!res) return void (await M.reply('Invalid anime id (MAL).'))
-        const ids = (await this.client.db.getUserAnimeList(M.sender.id)).map(
+        const ids = (await this.client.db.getAnimeList(M.sender.id)).map(
             (x) => x.mal_id
         )
         let text = `🎈 *Title:* ${res.title_english || res.title}\n❓ *Registered:* ${this.client.utils.capitalise(`${ids.includes(res.mal_id.toString())}`)} ${res.airing && !ids.includes(res.mal_id.toString()) ? '(Can be registered)' : !res.airing ? "(Can't be registered)" : ''}\n♦ *Year:* ${res.year || 'Unknown'}`
