@@ -9,7 +9,7 @@ export default class extends BaseCommand {
             cooldown: 20,
             description:
                 'Removes anime from the registered anime list of a user.',
-            usage: 'unregister --id=<mal_id>'
+            usage: 'unregister --id=<mal_id> || unregister --id=<mal_id> --group=true'
         })
     }
 
@@ -21,14 +21,17 @@ export default class extends BaseCommand {
             return void (await M.reply(
                 `Provide the id of an ongoing anime (MAL). Example - *${this.client.config.prefix}unregister --id=51180*`
             ))
+        const group =
+            flags.group && flags.group === 'true' && M.isGroup ? true : false
+        const id = group ? M.from : M.sender.id
         const anime = await this.client.db.getAnime(flags.id)
-        if (!anime || !anime.registered.includes(M.sender.id))
+        if (!anime || !anime.registered.includes(id))
             return void (await M.reply(
-                "🟨 Skipped as you're not registered for this anime id."
+                `🟨 Skipped as ${group ? 'this group is' : "you're"} not registered for this anime id.`
             ))
-        await this.client.db.pullRegistered(flags.id, M.sender.id)
+        await this.client.db.pullRegistered(flags.id, id)
         await M.reply(
-            `🟥 Successfully removed *${anime.titles.title_eng || anime.titles.title_rom}* from the registered list.`
+            `🟩 Successfully removed *${anime.titles.title_eng || anime.titles.title_rom}* from the registered list.`
         )
         const mapData = this.client.store.get('today')
         if (
@@ -39,10 +42,7 @@ export default class extends BaseCommand {
             return void null
         const i = mapData.findIndex((x) => x.title === anime.titles.title_rom)
         if (i < 0) return void null
-        mapData[i].registered.splice(
-            mapData[i].registered.indexOf(M.sender.id),
-            1
-        )
+        mapData[i].registered.splice(mapData[i].registered.indexOf(id), 1)
         if (!mapData[i].registered.length) {
             mapData.splice(i, 1)
             this.client.scheduled.splice(

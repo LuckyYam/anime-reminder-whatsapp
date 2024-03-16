@@ -10,7 +10,7 @@ export default class extends BaseCommand {
             cooldown: 30,
             description:
                 'Registers anime to notify a user when a new episode airs.',
-            usage: 'register --id=<mal_id>'
+            usage: 'register --id=<mal_id> || register --id=<mal_id> --group=true'
         })
     }
 
@@ -22,6 +22,9 @@ export default class extends BaseCommand {
             return void (await M.reply(
                 `Provide the id of an ongoing anime (MAL). Example - *${this.client.config.prefix}register --id=51180*`
             ))
+        const group =
+            flags.group && flags.group === 'true' && M.isGroup ? true : false
+        const id = group ? M.from : M.sender.id
         const anime = new Anime()
         const data = await anime
             .getAnimeById(flags.id)
@@ -40,10 +43,16 @@ export default class extends BaseCommand {
                 '🟥 Failed to add the anime. Try again after few days.'
             ))
         const dbAnime = await this.client.db.getAnime(data.mal_id)
-        if (!dbAnime) await this.client.db.createAnime(data, M.sender.id)
-        else await this.client.db.pushRegistered(data.mal_id, M.sender.id)
+        if (!dbAnime) await this.client.db.createAnime(data, id)
+        else {
+            if (dbAnime.registered.includes(id))
+                return void (await M.reply(
+                    `🟨 ${group ? 'This group has' : 'You are'} already registered for *${data.title_english || data.title}*`
+                ))
+            await this.client.db.pushRegistered(data.mal_id, id)
+        }
         await M.reply(
-            `🟩 Successfully registered for *${data.title_english || data.title}*`
+            `🟩 Successfully registered for *${data.title_english || data.title}* ${group ? 'in the group' : ''}`
         )
         await new AnimeLoader(this.client).load()
         await this.client.init()

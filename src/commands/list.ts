@@ -8,7 +8,7 @@ export default class extends BaseCommand {
             name: 'list',
             description: "Displays user's list of registered anime.",
             cooldown: 10,
-            usage: 'list (--page=2)'
+            usage: 'list (--page=2) | list --for=group'
         })
     }
 
@@ -19,15 +19,20 @@ export default class extends BaseCommand {
         let page = 1
         if (flags.page && !isNaN(Number(flags.page)))
             page = parseInt(flags.page) < 1 ? 1 : parseInt(flags.page)
-        const animeData = await this.client.db.getUserAnimeList(M.sender.id)
+        const group =
+            flags.for && flags.for === 'group' && M.isGroup ? true : false
+        const id = group ? M.from : M.sender.id
+        const animeData = await this.client.db.getAnimeList(id)
         if (!animeData || !animeData.length)
-            return void (await M.reply("You've not registered for any anime."))
+            return void (await M.reply(
+                `${group ? 'This group has not been' : "You're not"} registered for any anime.`
+            ))
         const { pagination, data } = this.client.utils.paginateArray(
             animeData,
             10,
             page
         )
-        let text = `${M.sender.username}'s registered anime list (${animeData.length} in total)\n`
+        let text = `${group ? 'Group' : M.sender.username}'s registered anime list (${animeData.length} in total)\n`
         if (pagination.total_pages > 1)
             text += `\n📗 *Current Page:* ${page}\n📘 *Total Pages:* ${pagination.total_pages}\n`
         for (const anime of data) {
@@ -43,7 +48,7 @@ export default class extends BaseCommand {
                 MAL_LOGO_URL
         )
         return void (await this.client.sock.sendMessage(
-            M.from,
+            id,
             {
                 image,
                 caption: text.trimEnd(),
