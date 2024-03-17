@@ -72,6 +72,9 @@ export class AnimeLoader {
             )
         }
         this.client.store.set('today', result)
+        this.client.scheduled.filter((x) =>
+            result.map((y) => y.title).includes(x)
+        )
         console.log(
             `${chalk.blueBright('[LOADER]')} - Successfully loaded ${chalk.green(result.length.toString())} anime (for today).`
         )

@@ -37,7 +37,7 @@ export default class extends BaseCommand {
             text += `\n📗 *Current Page:* ${page}\n📘 *Total Pages:* ${pagination.total_pages}\n`
         for (const anime of data) {
             const i = animeData.findIndex((ani) => ani.mal_id === anime.mal_id)
-            text += `\n*#${i + 1}*\n${anime.titles.title_eng || anime.titles.title_rom}\n*[Use ${this.client.config.prefix}unregister --id=${anime.mal_id} to remove this anime from your registered anime list]*\n`
+            text += `\n*#${i + 1}*\n${anime.titles.title_eng || anime.titles.title_rom}\n*[Use ${this.client.config.prefix}unregister --id=${anime.mal_id} ${group ? '--group=true' : ''} to remove this anime from ${group ? "the group's" : 'your'} registered anime list]*\n`
         }
         const malData = await new Anime().getAnimeById(data[0].mal_id)
         const { jpg } = malData.images
